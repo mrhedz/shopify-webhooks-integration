@@ -1,0 +1,288 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-04-03T12:00:00.000Z",
+  "__export_source": "codex.desktop.app",
+  "resources": [
+    {
+      "_id": "wrk_shopify_webhooks_backend",
+      "_type": "workspace",
+      "parentId": null,
+      "modified": 1775217600000,
+      "created": 1775217600000,
+      "name": "Shopify Webhooks Backend",
+      "description": "Coleccion para probar webhooks de Shopify en NestJS",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_shopify_webhooks_backend",
+      "_type": "environment",
+      "parentId": "wrk_shopify_webhooks_backend",
+      "modified": 1775217600000,
+      "created": 1775217600000,
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:3000",
+        "webhook_url": "{{ _.base_url }}/api/webhooks/shopify",
+        "shop_domain": "your-dev-store.myshopify.com",
+        "api_version": "2024-10",
+        "dummy_hmac": "local-dev-bypass",
+        "note": "Con SHOPIFY_SKIP_HMAC_VALIDATION=true, dummy_hmac puede ser cualquier valor."
+      }
+    },
+    {
+      "_id": "fld_shopify_webhooks",
+      "_type": "request_group",
+      "parentId": "wrk_shopify_webhooks_backend",
+      "modified": 1775217600000,
+      "created": 1775217600000,
+      "name": "Shopify Webhooks"
+    },
+    {
+      "_id": "req_orders_create",
+      "_type": "request",
+      "parentId": "fld_shopify_webhooks",
+      "modified": 1775217600000,
+      "created": 1775217600000,
+      "name": "orders/create",
+      "method": "POST",
+      "url": "{{ _.webhook_url }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": 1001,\n  \"email\": \"cliente@example.com\",\n  \"currency\": \"MXN\",\n  \"total_price\": \"1499.00\",\n  \"line_items\": [\n    {\n      \"product_id\": 501,\n      \"title\": \"Playera negra\",\n      \"quantity\": 2,\n      \"price\": \"499.50\",\n      \"sku\": \"TSHIRT-BLK-M\"\n    },\n    {\n      \"product_id\": 777,\n      \"title\": \"Gorra logo\",\n      \"quantity\": 1,\n      \"price\": \"500.00\",\n      \"sku\": \"CAP-LOGO\"\n    }\n  ]\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-shopify-topic",
+          "value": "orders/create"
+        },
+        {
+          "name": "x-shopify-shop-domain",
+          "value": "{{ _.shop_domain }}"
+        },
+        {
+          "name": "x-shopify-webhook-id",
+          "value": "demo-orders-create-1001"
+        },
+        {
+          "name": "x-shopify-api-version",
+          "value": "{{ _.api_version }}"
+        },
+        {
+          "name": "x-shopify-hmac-sha256",
+          "value": "{{ _.dummy_hmac }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_orders_create_duplicate",
+      "_type": "request",
+      "parentId": "fld_shopify_webhooks",
+      "modified": 1775217600000,
+      "created": 1775217600000,
+      "name": "orders/create duplicate",
+      "method": "POST",
+      "url": "{{ _.webhook_url }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": 1001,\n  \"email\": \"cliente@example.com\",\n  \"currency\": \"MXN\",\n  \"total_price\": \"1499.00\",\n  \"line_items\": [\n    {\n      \"product_id\": 501,\n      \"title\": \"Playera negra\",\n      \"quantity\": 2,\n      \"price\": \"499.50\",\n      \"sku\": \"TSHIRT-BLK-M\"\n    },\n    {\n      \"product_id\": 777,\n      \"title\": \"Gorra logo\",\n      \"quantity\": 1,\n      \"price\": \"500.00\",\n      \"sku\": \"CAP-LOGO\"\n    }\n  ]\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-shopify-topic",
+          "value": "orders/create"
+        },
+        {
+          "name": "x-shopify-shop-domain",
+          "value": "{{ _.shop_domain }}"
+        },
+        {
+          "name": "x-shopify-webhook-id",
+          "value": "demo-orders-create-1001"
+        },
+        {
+          "name": "x-shopify-api-version",
+          "value": "{{ _.api_version }}"
+        },
+        {
+          "name": "x-shopify-hmac-sha256",
+          "value": "{{ _.dummy_hmac }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_orders_paid",
+      "_type": "request",
+      "parentId": "fld_shopify_webhooks",
+      "modified": 1775217600000,
+      "created": 1775217600000,
+      "name": "orders/paid",
+      "method": "POST",
+      "url": "{{ _.webhook_url }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": 1001,\n  \"email\": \"cliente@example.com\",\n  \"currency\": \"MXN\",\n  \"total_price\": \"1499.00\",\n  \"line_items\": [\n    {\n      \"product_id\": 501,\n      \"title\": \"Playera negra\",\n      \"quantity\": 2,\n      \"price\": \"499.50\",\n      \"sku\": \"TSHIRT-BLK-M\"\n    }\n  ],\n  \"financial_status\": \"paid\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-shopify-topic",
+          "value": "orders/paid"
+        },
+        {
+          "name": "x-shopify-shop-domain",
+          "value": "{{ _.shop_domain }}"
+        },
+        {
+          "name": "x-shopify-webhook-id",
+          "value": "demo-orders-paid-1001"
+        },
+        {
+          "name": "x-shopify-api-version",
+          "value": "{{ _.api_version }}"
+        },
+        {
+          "name": "x-shopify-hmac-sha256",
+          "value": "{{ _.dummy_hmac }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_orders_fulfilled",
+      "_type": "request",
+      "parentId": "fld_shopify_webhooks",
+      "modified": 1775217600000,
+      "created": 1775217600000,
+      "name": "orders/fulfilled",
+      "method": "POST",
+      "url": "{{ _.webhook_url }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": 1001,\n  \"email\": \"cliente@example.com\",\n  \"currency\": \"MXN\",\n  \"total_price\": \"1499.00\",\n  \"line_items\": [\n    {\n      \"product_id\": 501,\n      \"title\": \"Playera negra\",\n      \"quantity\": 2,\n      \"price\": \"499.50\",\n      \"sku\": \"TSHIRT-BLK-M\"\n    }\n  ],\n  \"fulfillment_status\": \"fulfilled\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-shopify-topic",
+          "value": "orders/fulfilled"
+        },
+        {
+          "name": "x-shopify-shop-domain",
+          "value": "{{ _.shop_domain }}"
+        },
+        {
+          "name": "x-shopify-webhook-id",
+          "value": "demo-orders-fulfilled-1001"
+        },
+        {
+          "name": "x-shopify-api-version",
+          "value": "{{ _.api_version }}"
+        },
+        {
+          "name": "x-shopify-hmac-sha256",
+          "value": "{{ _.dummy_hmac }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_customers_create",
+      "_type": "request",
+      "parentId": "fld_shopify_webhooks",
+      "modified": 1775217600000,
+      "created": 1775217600000,
+      "name": "customers/create",
+      "method": "POST",
+      "url": "{{ _.webhook_url }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": 2001,\n  \"email\": \"ana@example.com\",\n  \"first_name\": \"Ana\",\n  \"last_name\": \"Martinez\",\n  \"phone\": \"+525511112222\",\n  \"state\": \"enabled\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-shopify-topic",
+          "value": "customers/create"
+        },
+        {
+          "name": "x-shopify-shop-domain",
+          "value": "{{ _.shop_domain }}"
+        },
+        {
+          "name": "x-shopify-webhook-id",
+          "value": "demo-customers-create-2001"
+        },
+        {
+          "name": "x-shopify-api-version",
+          "value": "{{ _.api_version }}"
+        },
+        {
+          "name": "x-shopify-hmac-sha256",
+          "value": "{{ _.dummy_hmac }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_products_update",
+      "_type": "request",
+      "parentId": "fld_shopify_webhooks",
+      "modified": 1775217600000,
+      "created": 1775217600000,
+      "name": "products/update",
+      "method": "POST",
+      "url": "{{ _.webhook_url }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": 3001,\n  \"title\": \"Sudadera portfolio\",\n  \"handle\": \"sudadera-portfolio\",\n  \"status\": \"active\",\n  \"vendor\": \"Demo Brand\",\n  \"product_type\": \"hoodie\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-shopify-topic",
+          "value": "products/update"
+        },
+        {
+          "name": "x-shopify-shop-domain",
+          "value": "{{ _.shop_domain }}"
+        },
+        {
+          "name": "x-shopify-webhook-id",
+          "value": "demo-products-update-3001"
+        },
+        {
+          "name": "x-shopify-api-version",
+          "value": "{{ _.api_version }}"
+        },
+        {
+          "name": "x-shopify-hmac-sha256",
+          "value": "{{ _.dummy_hmac }}"
+        }
+      ]
+    }
+  ]
+}

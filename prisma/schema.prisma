@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ShopifyEventStatus {
+  RECEIVED
+  QUEUED
+  PROCESSING
+  PROCESSED
+  FAILED
+  REJECTED
+}
+
+model ShopifyEvent {
+  id           String             @id @default(cuid())
+  topic        String
+  shopDomain   String
+  webhookId    String?
+  apiVersion   String?
+  payload      Json
+  hmacValid    Boolean
+  status       ShopifyEventStatus @default(RECEIVED)
+  errorMessage String?
+  receivedAt   DateTime           @default(now())
+  processedAt  DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([topic])
+  @@index([shopDomain])
+  @@index([status])
+  @@index([webhookId])
+  @@unique([topic, webhookId])
+}
+
+model Order {
+  id         String      @id @default(uuid())
+  shopifyId  String      @unique
+  email      String?
+  totalPrice Float
+  currency   String
+  status     String
+  rawPayload Json
+  items      OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now()) @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  productId String?
+  name      String
+  quantity  Int
+  price     Float
+  sku       String?
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model Customer {
+  id           String   @id @default(uuid())
+  shopifyId    String   @unique
+  email        String?
+  firstName    String?
+  lastName     String?
+  phone        String?
+  state        String?
+  rawPayload   Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+}
+
+model Product {
+  id           String   @id @default(uuid())
+  shopifyId    String   @unique
+  title        String
+  handle       String?
+  status       String?
+  vendor       String?
+  productType  String?
+  rawPayload   Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+}

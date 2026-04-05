@@ -49,29 +49,34 @@ export class ShopifyService {
     this.logger.log(
       `Received Shopify webhook topic=${headers.topic} shop=${headers.shopDomain} webhookId=${headers.webhookId ?? 'n/a'} resourceId=${resourceId ?? 'n/a'}`,
     );
-    this.logger.debug(
-      `Webhook payload for topic=${headers.topic}: ${JSON.stringify(body, null, 2)}`,
+
+    const hmacValidation = this.shopifyHmacService.validate(
+      rawBody as Buffer,
+      hmac,
     );
 
-    const isValid = this.shopifyHmacService.isValid(rawBody as Buffer, hmac);
+    if (!hmacValidation.isValid) {
+      this.logger.warn(
+        `Rejected Shopify webhook topic=${headers.topic} shop=${headers.shopDomain} webhookId=${headers.webhookId ?? 'n/a'} reason=${hmacValidation.reason ?? 'Unknown HMAC validation error'}`,
+      );
 
-    if (!isValid) {
       const rejectedEvent = await this.webhookEventsService.registerEvent({
         topic: headers.topic,
         shopDomain: headers.shopDomain,
         webhookId: headers.webhookId,
         resourceId,
-        idempotencyKey,
+        idempotencyKey: null,
         apiVersion: headers.apiVersion,
         payload: body,
         hmacValid: false,
         status: 'REJECTED',
-        errorMessage: 'Invalid Shopify webhook HMAC signature',
+        errorMessage:
+          hmacValidation.reason ?? 'Invalid Shopify webhook HMAC signature',
       });
 
       await this.webhookEventsService.markRejected(
         rejectedEvent.id,
-        'Invalid Shopify webhook HMAC signature',
+        hmacValidation.reason ?? 'Invalid Shopify webhook HMAC signature',
       );
 
       throw new BadRequestException('Invalid webhook signature');

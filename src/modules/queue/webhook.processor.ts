@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import { PrismaService } from '../../prisma/prisma.service';
+import { WebhookEventsService } from '../webhook-events/webhook-events.service';
 import { ShopifyWebhookRouterService } from './shopify-webhook-router.service';
 
 @Processor('webhooks')
@@ -9,26 +9,26 @@ export class WebhookProcessor extends WorkerHost {
   private readonly logger = new Logger(WebhookProcessor.name);
 
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly webhookEventsService: WebhookEventsService,
     private readonly shopifyWebhookRouterService: ShopifyWebhookRouterService,
   ) {
     super();
   }
 
   async process(job: Job<{ eventId: string; topic: string; payload: any }>) {
-    const { eventId, topic, payload } = job.data;
+    const { eventId, topic } = job.data;
 
     this.logger.log(`Processing webhook event ${eventId} for topic ${topic}`);
 
-    await this.prisma.shopifyEvent.update({
-      where: { id: eventId },
-      data: {
-        status: 'PROCESSING',
-        errorMessage: null,
-      },
-    });
+    await this.webhookEventsService.markProcessing(eventId);
 
-    await this.shopifyWebhookRouterService.dispatch(topic, payload);
+    const event = await this.webhookEventsService.findById(eventId);
+
+    if (!event) {
+      throw new Error(`Webhook event ${eventId} not found`);
+    }
+
+    await this.shopifyWebhookRouterService.dispatch(topic, event.payload);
 
     return {
       ok: true,
@@ -41,14 +41,7 @@ export class WebhookProcessor extends WorkerHost {
   async onCompleted(job: Job<{ eventId: string }>) {
     this.logger.log(`Processed webhook event ${job.data.eventId}`);
 
-    await this.prisma.shopifyEvent.update({
-      where: { id: job.data.eventId },
-      data: {
-        status: 'PROCESSED',
-        processedAt: new Date(),
-        errorMessage: null,
-      },
-    });
+    await this.webhookEventsService.markProcessed(job.data.eventId);
   }
 
   @OnWorkerEvent('failed')
@@ -74,12 +67,9 @@ export class WebhookProcessor extends WorkerHost {
       error?.stack ?? error?.message,
     );
 
-    await this.prisma.shopifyEvent.update({
-      where: { id: job.data.eventId },
-      data: {
-        status: 'FAILED',
-        errorMessage: error?.message ?? 'Unknown queue processing error',
-      },
-    });
+    await this.webhookEventsService.markFailed(
+      job.data.eventId,
+      error?.message ?? 'Unknown queue processing error',
+    );
   }
 }

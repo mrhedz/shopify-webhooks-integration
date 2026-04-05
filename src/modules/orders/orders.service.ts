@@ -34,6 +34,8 @@ export class OrdersService {
         totalPrice: parseFloat(payload.total_price ?? '0'),
         currency: payload.currency ?? 'MXN',
         status,
+        financialStatus: payload.financial_status ?? null,
+        fulfillmentStatus: payload.fulfillment_status ?? null,
         rawPayload: payload,
         items: {
           deleteMany: {},
@@ -52,6 +54,8 @@ export class OrdersService {
         totalPrice: parseFloat(payload.total_price ?? '0'),
         currency: payload.currency ?? 'MXN',
         status,
+        financialStatus: payload.financial_status ?? null,
+        fulfillmentStatus: payload.fulfillment_status ?? null,
         rawPayload: payload,
         items: {
           create: items.map((item: any) => ({

@@ -20,7 +20,7 @@ export class QueueService {
       `Queueing webhook event ${data.eventId} for topic ${data.topic}`,
     );
 
-    return this.webhookQueue.add('process-webhook', data, {
+    return this.webhookQueue.add(data.topic, data, {
       attempts: 3,
       backoff: {
         type: 'exponential',

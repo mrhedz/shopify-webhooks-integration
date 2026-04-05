@@ -21,6 +21,8 @@ model ShopifyEvent {
   topic        String
   shopDomain   String
   webhookId    String?
+  resourceId   String?
+  idempotencyKey String?          @unique
   apiVersion   String?
   payload      Json
   hmacValid    Boolean
@@ -35,20 +37,22 @@ model ShopifyEvent {
   @@index([shopDomain])
   @@index([status])
   @@index([webhookId])
-  @@unique([topic, webhookId])
+  @@index([resourceId])
 }
 
 model Order {
-  id         String      @id @default(uuid())
-  shopifyId  String      @unique
-  email      String?
-  totalPrice Float
-  currency   String
-  status     String
-  rawPayload Json
-  items      OrderItem[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @default(now()) @updatedAt
+  id                String      @id @default(uuid())
+  shopifyId         String      @unique
+  email             String?
+  totalPrice        Float
+  currency          String
+  status            String
+  financialStatus   String?
+  fulfillmentStatus String?
+  rawPayload        Json
+  items             OrderItem[]
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @default(now()) @updatedAt
 }
 
 model OrderItem {

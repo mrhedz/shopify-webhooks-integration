@@ -3,6 +3,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { CustomersModule } from '../customers/customers.module';
 import { OrdersModule } from '../orders/orders.module';
 import { ProductsModule } from '../products/products.module';
+import { WebhookEventsModule } from '../webhook-events/webhook-events.module';
 import { CustomersCreateHandler } from './handlers/customers-create.handler';
 import { OrdersCreateHandler } from './handlers/orders-create.handler';
 import { OrdersFulfilledHandler } from './handlers/orders-fulfilled.handler';
@@ -20,6 +21,7 @@ import { WebhookProcessor } from './webhook.processor';
     OrdersModule,
     CustomersModule,
     ProductsModule,
+    WebhookEventsModule,
   ],
   providers: [
     QueueService,

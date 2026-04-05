@@ -7,7 +7,8 @@ import { HealthModule } from './modules/health/health.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { ProductsModule } from './modules/products/products.module';
 import { QueueModule } from './modules/queue/queue.module';
-import { WebhooksModule } from './modules/webhooks/webhooks.module';
+import { ShopifyModule } from './modules/shopify/shopify.module';
+import { WebhookEventsModule } from './modules/webhook-events/webhook-events.module';
 
 @Module({
   imports: [
@@ -27,8 +28,9 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
     OrdersModule,
     CustomersModule,
     ProductsModule,
+    WebhookEventsModule,
     QueueModule,
-    WebhooksModule,
+    ShopifyModule,
   ],
 })
 export class AppModule {}
